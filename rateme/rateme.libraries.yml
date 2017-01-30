@@ -1,0 +1,11 @@
+fivestar:
+  version: 1.x
+  css:
+    theme:
+      css/fivestar.css: {}
+
+fontawesome:
+  version: 4.7.0
+  css:
+    theme:
+      css/font-awesome-4.7.0/css/font-awesome.min.css: {}

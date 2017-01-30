@@ -1,0 +1,7 @@
+{% if value > 0 %}{% for i in 1..value %}<span class="fa fa-star"></span>{% endfor %}{% endif %}
+{% if value < 5 %}{% for i in (value + 1)..5 %}<span class="fa fa-star-o"></span>{% endfor %}{% endif %}
+ -
+{% if value == 1 %}{{ '1 star...'|t }}
+{% elseif value < 4 %}{{ value }}{{ ' stars.'|t }}
+{% else %}{{ value }}{{ ' stars baby!'|t }}
+{% endif %}

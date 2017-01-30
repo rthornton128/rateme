@@ -1,0 +1,28 @@
+.field--type-rating .form-radios {
+    display: flex;
+    flex-direction: row;
+    color: grey;
+}
+
+input.five-star { display: none; }
+
+.field--type-rating .fa-star {
+    color: yellow;
+}
+
+.field--type-rating .fa-star-o {
+}
+
+.field--type-rating .fa-star + label:before {
+    font-family: FontAwesome;
+    color: yellow;
+    content: '\f005';
+}
+
+.field--type-rating .fa-star-o + label:before {
+    font-family: FontAwesome;
+    content: '\f006';
+}
+
+.field--type-rating .five-star:checked + label:before { color: orange; content: '\f005'; }
+.field--type-rating .five-star label:hover:before { color: orange; content: '\f005'; }

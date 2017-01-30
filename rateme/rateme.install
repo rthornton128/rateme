@@ -1,0 +1,53 @@
+<?php
+
+function rateme_schema() {
+    $schema['rateme_rating'] = [
+        'description' => 'Stores node type, node id, user id and rating for an entity',
+        'fields' => [
+            'id' => [
+                'description' => 'The primary identifier for the record.',
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ],
+            'cid' => [
+                'description' => 'The (comment).id the vote is cast from',
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ],
+            'nid' => [
+                'description' => 'The (node).id the vote is cast against',
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ],
+            'uid' => [
+                'description' => 'The {users}.uid that added this vote.',
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ],
+            'ntype' => [
+                'description' => 'The [node].type that this vote is for',
+                'type' => 'varchar',
+                'length' => 64,
+                'not null' => FALSE,
+                'default' => '',
+            ],
+            'rating' => [
+                'description' => 'The rating.',
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ],
+        ],
+        'primary key' => ['id'],
+        'indexes' => [
+            'node' => ['nid'],
+            'node_user' => ['nid', 'uid'],
+        ],
+    ];
+
+    return $schema;
+}

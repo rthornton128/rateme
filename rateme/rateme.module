@@ -1,0 +1,142 @@
+<?php
+
+/**
+ * @file
+ * Contains rateme.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\comment\Entity\Comment;
+
+/**
+ * Implements hook_help().
+ */
+function rateme_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the rateme module.
+    case 'help.page.rateme':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Use a rating scale field in Drupal entities') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function rateme_theme($existing, $type, $theme, $path)
+{
+    return [
+        'five_stars' => [
+            'variables' => ['value' => NULL],
+        ],
+    ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function rateme_preprocess_input__radio(&$variables)
+{
+    if (in_array('five-star', $variables['attributes']['class'])) {
+        $stars = $variables['element']['#default_value'];
+        $index = $variables['element']['#return_value'];
+        if ($index <= $stars) {
+            $variables['attributes']['class'][] = 'fa-star'; // for compatibility with scale-star.html.twig
+        }
+        else {
+            $variables['attributes']['class'][] = 'fa-star-o'; // for compatibility with scale-star.html.twig
+        }
+    }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function rateme_comment_update(EntityInterface $entity)
+{
+    $comment = Comment::load($entity->id());
+    $value = 0; // invalid setting
+    foreach ($comment->getFieldDefinitions() as $name => $definition) {
+        if ($definition->getType() == "rating") {
+            $value = $comment->get($name)->getValue()[0]['value'];
+        }
+    }
+    //drupal_set_message('update: value => ' . $value);
+    \Drupal::service('rateme.rating')->updateRating(
+        $entity->id(),
+        $comment->getCommentedEntityId(),
+        $comment->getCommentedEntityTypeId(),
+        $comment->getOwnerId(),
+        $value);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_predelete().
+ */
+function rateme_comment_predelete(EntityInterface $entity)
+{
+    $comment = Comment::load($entity->id());
+    \Drupal::service('rateme.rating') ->deleteRating(
+        $entity->id(),
+        $comment->getCommentedEntityId(),
+        $comment->getCommentedEntityTypeId(),
+        $comment->getOwnerId());
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_create().
+ */
+function rateme_comment_insert(EntityInterface $entity)
+{
+    $comment = Comment::load($entity->id());
+    $value = 0; // invalid, default setting
+    foreach ($comment->getFieldDefinitions() as $name => $definition) {
+        if ($definition->getType() == "rating") {
+            $value = $comment->get($name)->getValue()[0]['value'];
+        }
+    }
+    \Drupal::service('rateme.rating')->createRating(
+        $entity->id(),
+        $comment->getCommentedEntityId(),
+        $comment->getCommentedEntityTypeId(),
+        $comment->getOwnerId(),
+        $value);
+}
+
+
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+/* TODO implement better result display/settings and view
+ * This would probably be the preferred method of handing the voting results rather than a widget since the
+ * results are calculated anyway and not stored. Caching and robot detection a must.
+ * In addition to "enabled" setting for each piece of content (use a global admin setting for content that
+ * is allowed and/or defaults to).
+ * Use a drop-down for the display style, mirroring (hook into somehow?) the widget formatters. Does make
+ * extending them more difficult since it may not be as simple as implementing a single formatter for both
+ * voting and results.
+ */
+/*
+function rateme_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    $form['rateme'] = [
+        '#type' => 'details',
+        '#title' => t('Content Rating Settings'),
+        '#access' => Drupal::currentUser()->hasPermission('access content'),
+        '#group' => 'advanced',
+        '#weight' => 100,
+    ];
+
+    //$enabler = \Drupal::service('rsvplist.enabler');
+    $form['rateme']['rate_scale_enabled'] = [
+        '#type' => 'checkbox',
+        '#title' => t('Show ratings for this node'),
+        '#default_value' => FALSE, //$enabler->isEnabled($node),
+    ];
+}
+*/

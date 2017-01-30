@@ -1,0 +1,14 @@
+{
+  "name": "drupal/rateme",
+  "type": "drupal-module",
+  "description": "Use a rating scale field in Drupal entities, like a five star rating",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/rateme",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/rateme",
+    "source": "http://cgit.drupalcode.org/rateme"
+  },
+  "require": { }
+}
