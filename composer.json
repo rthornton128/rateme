@@ -1,5 +1,5 @@
 {
-  "name": "drupal/rateme",
+  "name": "rthornton/rateme",
   "type": "drupal-module",
   "description": "Use a rating scale field in Drupal entities, like a five star rating",
   "keywords": ["Drupal"],
